@@ -33,6 +33,7 @@ router.put('/:id', protect, requireRoles('instructor', 'admin'), updateCourse);
 router.delete('/:id', protect, requireRoles('instructor', 'admin'), deleteCourse);
 
 // Course workflow: submit for admin approval
+router.put('/:id/submit', protect, requireRoles('instructor', 'admin'), submitCourseForApproval);
 router.patch('/:id/submit', protect, requireRoles('instructor', 'admin'), submitCourseForApproval);
 
 // Admin workflow: approve or reject course (Module 02 integration contract)

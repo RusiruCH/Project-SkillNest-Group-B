@@ -141,6 +141,13 @@ const getCourseById = async (req, res) => {
 // @access  Private (Instructor / Admin)
 const createCourse = async (req, res) => {
   try {
+    // Business Rule: Only approved instructors (or admin) can create courses
+    if (req.user.role === 'instructor' && req.user.instructorStatus !== 'approved') {
+      return res.status(403).json({
+        success: false,
+        message: "Only approved instructors can create courses. Your instructor status is '" + (req.user.instructorStatus || 'none') + "'. Please obtain administrator approval first.",
+      });
+    }
     const {
       title,
       subtitle,

@@ -23,6 +23,32 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static directory for file and material uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Root endpoint - Welcome & API Navigation
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    platform: 'SkillNest - Open Course-ware and Technical Skill Development Platform',
+    module: 'Module 1: Course & Learning Material Management',
+    developer: 'L.M.R.C.Bandara (SEU/IS/22/ICT/113)',
+    status: 'Backend API Server is Running Successfully',
+    frontendUrl: 'http://localhost:5173',
+    message: 'To access the interactive visual interface (Course Manager, Catalog, Studio), open http://localhost:5173 in your browser.',
+    endpoints: {
+      health: 'GET /api/health',
+      coursesPublic: 'GET /api/courses',
+      instructorCourses: 'GET /api/courses/my-courses',
+      categories: 'GET /api/courses/categories',
+      courseDetails: 'GET /api/courses/:id',
+      createCourse: 'POST /api/courses',
+      updateCourse: 'PUT /api/courses/:id',
+      deleteCourse: 'DELETE /api/courses/:id',
+      submitCourse: 'PUT /api/courses/:id/submit',
+      addTopic: 'POST /api/courses/:courseId/topics',
+      uploadMaterial: 'POST /api/topics/:topicId/materials',
+    },
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
@@ -82,4 +108,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
