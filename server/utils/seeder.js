@@ -6,7 +6,7 @@ const Course = require('../models/Course');
 const CourseStructure = require('../models/CourseStructure');
 const LearningMaterial = require('../models/LearningMaterial');
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const seedDatabase = async () => {
   try {
