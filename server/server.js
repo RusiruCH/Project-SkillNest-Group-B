@@ -65,10 +65,12 @@ const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const materialRoutes = require('./routes/materialRoutes');
+const playgroundRoutes = require('./routes/playgroundRoutes');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/playground', playgroundRoutes);
 
 // Nested routes for topics & materials
 app.use('/api/courses/:courseId/topics', topicRoutes);
