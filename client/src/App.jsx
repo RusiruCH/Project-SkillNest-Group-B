@@ -11,6 +11,12 @@ import CurriculumBuilder from './pages/CurriculumBuilder';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
+// Module 04: Hackathon Challenge Management (Member 04)
+import ChallengesPage from './pages/ChallengesPage';
+import ChallengeDetailPage from './pages/ChallengeDetailPage';
+import InstructorChallengeDashboard from './pages/InstructorChallengeDashboard';
+import LearnerSubmissionsPage from './pages/LearnerSubmissionsPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -33,6 +39,12 @@ function App() {
               {/* Auth Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+
+              {/* Module 04: Hackathon Challenge Management Routes (Member 04) */}
+              <Route path="/challenges" element={<ChallengesPage />} />
+              <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
+              <Route path="/challenges/my-submissions" element={<LearnerSubmissionsPage />} />
+              <Route path="/instructor/challenges" element={<InstructorChallengeDashboard />} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -77,6 +77,24 @@ app.use('/api/topics', topicRoutes);
 app.use('/api/topics/:topicId/materials', materialRoutes);
 app.use('/api/materials', materialRoutes);
 
+// Module 04: Hackathon Challenge Management Routes (Member 04)
+const challengeRoutes = require('./routes/challengeRoutes');
+const submissionRoutes = require('./routes/submissionRoutes');
+const seedChallenges = require('./utils/challengeSeeder');
+
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/submissions', submissionRoutes);
+
+// Module 04 Demo Seeder
+app.post('/api/challenges/seed', async (req, res) => {
+  try {
+    await seedChallenges();
+    res.json({ success: true, message: 'Hackathon challenges seeded successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // 404 handler for undefined API routes
 app.use((req, res, next) => {
   res.status(404).json({
