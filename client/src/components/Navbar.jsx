@@ -92,6 +92,18 @@ const Navbar = () => {
             Course Catalog
           </Link>
 
+          <Link
+            to="/playground"
+            className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${
+              isActive('/playground')
+                ? 'bg-indigo-50 text-indigo-600'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Code className="w-4 h-4 text-indigo-600" />
+            Code Playground
+          </Link>
+
           {(user?.role === 'instructor' || user?.role === 'admin') && (
             <>
               <Link

@@ -10,6 +10,7 @@ import CourseEditor from './pages/CourseEditor';
 import CurriculumBuilder from './pages/CurriculumBuilder';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PlaygroundPage from './pages/PlaygroundPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/courses" element={<CourseListPage />} />
               <Route path="/courses/:id" element={<CourseDetailPage />} />
+              <Route path="/playground" element={<PlaygroundPage />} />
 
               {/* Instructor Routes for Module 01 */}
               <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
