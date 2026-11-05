@@ -28,13 +28,16 @@ app.get('/', (req, res) => {
   res.json({
     success: true,
     platform: 'SkillNest - Open Course-ware and Technical Skill Development Platform',
-    module: 'Module 1: Course & Learning Material Management',
-    developer: 'L.M.R.C.Bandara (SEU/IS/22/ICT/113)',
+    modules: {
+      module1: 'Course & Learning Material Management — L.M.R.C.Bandara (SEU/IS/22/ICT/113)',
+      module2: 'Instructor & Course Approval Management — Member 02',
+    },
     status: 'Backend API Server is Running Successfully',
     frontendUrl: 'http://localhost:5173',
-    message: 'To access the interactive visual interface (Course Manager, Catalog, Studio), open http://localhost:5173 in your browser.',
+    message: 'To access the interactive visual interface, open http://localhost:5173 in your browser.',
     endpoints: {
       health: 'GET /api/health',
+      // Module 1
       coursesPublic: 'GET /api/courses',
       instructorCourses: 'GET /api/courses/my-courses',
       categories: 'GET /api/courses/categories',
@@ -45,6 +48,12 @@ app.get('/', (req, res) => {
       submitCourse: 'PUT /api/courses/:id/submit',
       addTopic: 'POST /api/courses/:courseId/topics',
       uploadMaterial: 'POST /api/topics/:topicId/materials',
+      // Module 2
+      adminDashboard: 'GET /api/admin/dashboard',
+      instructorApplications: 'GET /api/admin/instructor-applications',
+      approveCourse: 'PUT /api/admin/courses/:id/approve',
+      applyInstructor: 'POST /api/instructor-applications',
+      myApplicationStatus: 'GET /api/instructor-applications/my-status',
     },
   });
 });
@@ -54,19 +63,22 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     platform: 'SkillNest API',
-    module: 'Module 1 - Course & Learning Material Management',
-    author: 'L.M.R.C.Bandara (SEU/IS/22/ICT/113)',
+    modules: ['Module 1 - Course & Learning Material Management', 'Module 2 - Instructor & Course Approval Management'],
     timestamp: new Date().toISOString(),
   });
 });
 
-// Import route modules
+// Import route modules — Module 1
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const materialRoutes = require('./routes/materialRoutes');
 
-// Mount routes
+// Import route modules — Module 2 (Instructor & Course Approval Management)
+const adminApprovalRoutes = require('./routes/adminApprovalRoutes');
+const instructorApplicationRoutes = require('./routes/instructorApplicationRoutes');
+
+// Mount routes — Module 1
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 
@@ -76,6 +88,10 @@ app.use('/api/topics', topicRoutes);
 
 app.use('/api/topics/:topicId/materials', materialRoutes);
 app.use('/api/materials', materialRoutes);
+
+// Mount routes — Module 2
+app.use('/api/admin', adminApprovalRoutes);
+app.use('/api/instructor-applications', instructorApplicationRoutes);
 
 // 404 handler for undefined API routes
 app.use((req, res, next) => {
@@ -101,8 +117,9 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log('================================================================');
-  console.log(` SkillNest API - Module 1 (Course & Learning Material Management)`);
-  console.log(` Developed by: L.M.R.C.Bandara (SEU/IS/22/ICT/113)`);
+  console.log(` SkillNest API Server`);
+  console.log(` Module 1: Course & Learning Material Management — L.M.R.C.Bandara`);
+  console.log(` Module 2: Instructor & Course Approval Management — Member 02`);
   console.log(` Server running on: http://localhost:${PORT}`);
   console.log('================================================================');
 });

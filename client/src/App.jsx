@@ -11,6 +11,13 @@ import CurriculumBuilder from './pages/CurriculumBuilder';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
+// Module 2: Instructor & Course Approval Management — Member 02
+import AdminDashboard from './pages/AdminDashboard';
+import InstructorApplications from './pages/InstructorApplications';
+import CourseApprovals from './pages/CourseApprovals';
+import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
+import ApplyInstructorPage from './pages/ApplyInstructorPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -34,6 +41,13 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
+              {/* Module 2: Admin Approval Management Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/applications" element={<InstructorApplications />} />
+              <Route path="/admin/courses" element={<CourseApprovals />} />
+              <Route path="/admin/history" element={<ApprovalHistoryPage />} />
+              <Route path="/apply-instructor" element={<ApplyInstructorPage />} />
+
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
@@ -45,4 +59,3 @@ function App() {
 }
 
 export default App;
-
