@@ -10,6 +10,14 @@ import CourseEditor from './pages/CourseEditor';
 import CurriculumBuilder from './pages/CurriculumBuilder';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PlaygroundPage from './pages/PlaygroundPage';
+
+// Module 2: Instructor & Course Approval Management — Member 02
+import AdminDashboard from './pages/AdminDashboard';
+import InstructorApplications from './pages/InstructorApplications';
+import CourseApprovals from './pages/CourseApprovals';
+import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
+import ApplyInstructorPage from './pages/ApplyInstructorPage';
 
 // Module 04: Hackathon Challenge Management (Member 04)
 import ChallengesPage from './pages/ChallengesPage';
@@ -29,6 +37,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/courses" element={<CourseListPage />} />
               <Route path="/courses/:id" element={<CourseDetailPage />} />
+              <Route path="/playground" element={<PlaygroundPage />} />
 
               {/* Instructor Routes for Module 01 */}
               <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
@@ -57,4 +66,3 @@ function App() {
 }
 
 export default App;
-
