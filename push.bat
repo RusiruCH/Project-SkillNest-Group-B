@@ -1,17 +1,27 @@
 @echo off
+set "PATH=C:\Users\Lenovo\AppData\Local\GitHubDesktop\app-3.6.10\resources\app\git\cmd;%PATH%"
+
 echo ========================================================
-echo   Pushing Module 01 to GitHub: Project-SkillNest-Group-B
-echo   Contributor: L.M.R.C.Bandara (SEU/IS/22/ICT/113)
+echo   SkillNest Group B - Module 03: Code Playground
+echo   Contributor: B.S.D.P. Wickramasingha (SEU/IS/22/ICT/013)
+echo   Repository:  Project-SkillNest-Group-B
+echo   Branch:      member03-code-playground
 echo ========================================================
 echo.
 
-git push -u origin main
+echo Checking Git status...
+git status
+echo.
+
+echo Pushing member03-code-playground branch to GitHub...
+git push origin member03-code-playground
 
 echo.
 if %ERRORLEVEL% EQU 0 (
     echo ========================================================
     echo   SUCCESSFULLY PUSHED TO GITHUB!
-    echo   Repository: https://github.com/RusiruCH/Project-SkillNest-Group-B
+    echo   Branch: member03-code-playground
+    echo   Pull Request: https://github.com/RusiruCH/Project-SkillNest-Group-B/pull/new/member03-code-playground
     echo ========================================================
 ) else (
     echo.
@@ -19,4 +29,3 @@ if %ERRORLEVEL% EQU 0 (
 )
 
 pause
-
