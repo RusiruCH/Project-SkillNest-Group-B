@@ -4,18 +4,18 @@ SkillNest – open course-ware & technical skill development platform (MERN stac
 
 [![Group ID](https://img.shields.io/badge/Group-Group%20B-blue)](https://github.com)
 [![Course](https://img.shields.io/badge/Course-SWT22022%20Practical%20for%20IAD-green)](https://github.com)
-[![Member](https://img.shields.io/badge/Member%2001-L.M.R.C.Bandara%20(SEU%2FIS%2F22%2FICT%2F113)-indigo)](https://github.com)
+[![Group Leader](https://img.shields.io/badge/Member%2001-L.M.R.C.Bandara%20(SEU%2FIS%2F22%2FICT%2F113)-indigo)](https://github.com)
 [![Stack](https://img.shields.io/badge/Stack-MERN%20(MongoDB,%20Express,%20React,%20Node)-orange)](https://github.com)
 
 **South Eastern University of Sri Lanka**  
-**Department of Interdisciplinary Studies, Faculty of Applied Sciences**  
+**Department of Information and Communication Technology, Faculty of Thechnology**  
 **SWT22022 Practical for Internet Application Development**  
 **Proposal for CA1 Group Assignment — Group B**
 
 ---
 
 ## 👨‍💻 Primary Module Contributor
-- **Member 01:** L.M.R.C.Bandara (`SEU/IS/22/ICT/113`)
+- **Group Leader** L.M.R.C.Bandara (`SEU/IS/22/ICT/113`)
 - **Assigned Module:** **Module 1 – Course & Learning Material Management**
 - **Complexity / Contribution:** High — Course creation, curriculum structure management, multi-format learning material uploads, role-based access control, learner viewing, and integration with the Module 02 Approval Workflow.
 
