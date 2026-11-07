@@ -50,3 +50,5 @@ Thumbs.db
 # Temporary and lock files
 ~$*
 *.tmp
+.git-tool/
+temp_m2/
