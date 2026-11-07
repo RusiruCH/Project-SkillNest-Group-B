@@ -92,17 +92,31 @@ const Navbar = () => {
             Course Catalog
           </Link>
 
+          {/* Module 04: Hackathon Challenges */}
           <Link
-            to="/playground"
+            to="/challenges"
             className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${
-              isActive('/playground')
-                ? 'bg-indigo-50 text-indigo-600'
+              isActive('/challenges')
+                ? 'bg-purple-50 text-purple-600 font-bold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <Code className="w-4 h-4 text-indigo-600" />
-            Code Playground
+            <Code className="w-4 h-4 text-purple-500" />
+            Challenges
           </Link>
+
+          {user?.role === 'learner' && (
+            <Link
+              to="/challenges/my-submissions"
+              className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${
+                isActive('/challenges/my-submissions')
+                  ? 'bg-purple-50 text-purple-600 font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              My Submissions
+            </Link>
+          )}
 
           {(user?.role === 'instructor' || user?.role === 'admin') && (
             <>
@@ -116,6 +130,17 @@ const Navbar = () => {
               >
                 <LayoutDashboard className="w-4 h-4" />
                 Instructor Studio
+              </Link>
+              <Link
+                to="/instructor/challenges"
+                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${
+                  isActive('/instructor/challenges')
+                    ? 'bg-purple-50 text-purple-600 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                <Code className="w-4 h-4 text-purple-500" />
+                Challenge Studio
               </Link>
               <Link
                 to="/instructor/courses/new"
