@@ -12,6 +12,19 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 
+// Module 2: Instructor & Course Approval Management — Member 02
+import AdminDashboard from './pages/AdminDashboard';
+import InstructorApplications from './pages/InstructorApplications';
+import CourseApprovals from './pages/CourseApprovals';
+import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
+import ApplyInstructorPage from './pages/ApplyInstructorPage';
+
+// Module 04: Hackathon Challenge Management (Member 04)
+import ChallengesPage from './pages/ChallengesPage';
+import ChallengeDetailPage from './pages/ChallengeDetailPage';
+import InstructorChallengeDashboard from './pages/InstructorChallengeDashboard';
+import LearnerSubmissionsPage from './pages/LearnerSubmissionsPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -36,6 +49,12 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
 
+              {/* Module 04: Hackathon Challenge Management Routes (Member 04) */}
+              <Route path="/challenges" element={<ChallengesPage />} />
+              <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
+              <Route path="/challenges/my-submissions" element={<LearnerSubmissionsPage />} />
+              <Route path="/instructor/challenges" element={<InstructorChallengeDashboard />} />
+
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
@@ -47,4 +66,3 @@ function App() {
 }
 
 export default App;
-
