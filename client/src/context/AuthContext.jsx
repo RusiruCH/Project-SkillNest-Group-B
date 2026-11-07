@@ -38,7 +38,10 @@ export const AuthProvider = ({ children }) => {
     const saved = localStorage.getItem('skillnest_user');
     return saved ? JSON.parse(saved) : DEFAULT_INSTRUCTOR;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('skillnest_token') || 'demo_jwt_token_bandara');
+  const [token, setToken] = useState(() => {
+    const saved = localStorage.getItem('skillnest_token');
+    return saved && !saved.startsWith('demo_') ? saved : null;
+  });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -50,12 +53,35 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    if (token) {
+    if (token && !token.startsWith('demo_')) {
       localStorage.setItem('skillnest_token', token);
     } else {
       localStorage.removeItem('skillnest_token');
     }
   }, [token]);
+
+  // Ensure a valid signed JWT exists for evaluation if user is currently loaded
+  useEffect(() => {
+    const syncAuthSession = async () => {
+      const savedToken = localStorage.getItem('skillnest_token');
+      const isDummyOrMissing = !savedToken || savedToken.startsWith('demo_');
+      if (isDummyOrMissing && user?.email) {
+        try {
+          const res = await api.post('/auth/login', {
+            email: user.email,
+            password: 'password123',
+          });
+          if (res.data?.success && res.data?.token) {
+            setToken(res.data.token);
+            setUser(res.data.user);
+          }
+        } catch (_) {
+          // Backend offline or non-default credentials
+        }
+      }
+    };
+    syncAuthSession();
+  }, []);
 
   const login = async (email, password) => {
     setLoading(true);
@@ -66,12 +92,10 @@ export const AuthProvider = ({ children }) => {
         setToken(res.data.token);
         return { success: true };
       }
+      return { success: false, message: res.data?.message || 'Login failed.' };
     } catch (err) {
-      // Demo fallback if backend is offline
-      const matched = Object.values(DEMO_USERS).find((u) => u.email === email) || DEFAULT_INSTRUCTOR;
-      setUser(matched);
-      setToken('demo_token_' + matched.role);
-      return { success: true };
+      const msg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
@@ -86,11 +110,10 @@ export const AuthProvider = ({ children }) => {
         setToken(res.data.token);
         return { success: true };
       }
+      return { success: false, message: res.data?.message || 'Registration failed.' };
     } catch (err) {
-      const newUser = { id: 'u_' + Date.now(), name, email, role: role || 'learner' };
-      setUser(newUser);
-      setToken('demo_token_' + newUser.role);
-      return { success: true };
+      const msg = err.response?.data?.message || 'Registration failed.';
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
@@ -99,18 +122,42 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem('skillnest_user');
+    localStorage.removeItem('skillnest_token');
   };
 
-  // Instant role switch for evaluator convenience
-  const switchRole = (role) => {
+  // Instant role switch with real JWT authentication from backend
+  const switchRole = async (role) => {
+    const credentials = {
+      instructor: { email: 'instructor@skillnest.edu', password: 'password123' },
+      learner: { email: 'learner@skillnest.edu', password: 'password123' },
+      admin: { email: 'admin@skillnest.edu', password: 'password123' },
+    };
+
+    if (credentials[role]) {
+      try {
+        const res = await api.post('/auth/login', credentials[role]);
+        if (res.data?.success && res.data?.token) {
+          setUser(res.data.user);
+          setToken(res.data.token);
+          return { success: true };
+        }
+      } catch (err) {
+        console.warn('Backend login unavailable for role switch, fallback to mock user:', err.message);
+      }
+    }
+
     if (DEMO_USERS[role]) {
       setUser(DEMO_USERS[role]);
-      setToken('demo_token_' + role);
+      setToken(null);
     }
+    return { success: true };
   };
 
+  const isAuthenticated = Boolean(token && !token.startsWith('demo_'));
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, switchRole }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, loading, login, register, logout, switchRole }}>
       {children}
     </AuthContext.Provider>
   );

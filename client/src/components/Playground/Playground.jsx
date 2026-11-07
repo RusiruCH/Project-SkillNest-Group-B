@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import {
   Play,
@@ -20,8 +21,12 @@ import {
   X,
   FileCode,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Lock,
+  LogIn,
+  KeyRound
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import './playground.css';
 
@@ -112,6 +117,9 @@ const LANGUAGE_CONFIG = {
 };
 
 export default function Playground() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, switchRole } = useAuth();
+
   // State
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState(DEFAULT_TEMPLATES.javascript);
@@ -119,6 +127,7 @@ export default function Playground() {
   const [showStdin, setShowStdin] = useState(false);
   const [output, setOutput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [authError, setAuthError] = useState(false);
   const [execStatus, setExecStatus] = useState('idle'); // idle | running | success | error | timeout | demo
   const [execTime, setExecTime] = useState(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
@@ -151,7 +160,11 @@ export default function Playground() {
       const res = await api.get('/playground/history?limit=25');
       setHistory(res.data.items || []);
     } catch (err) {
-      console.warn('Could not load execution history:', err.message);
+      if (err.response?.status === 401) {
+        setHistory([]);
+      } else {
+        console.warn('Could not load execution history:', err.message);
+      }
     } finally {
       setHistoryLoading(false);
     }
@@ -190,6 +203,7 @@ export default function Playground() {
   const handleClearConsole = () => {
     setOutput('');
     setErrorMessage('');
+    setAuthError(false);
     setExecStatus('idle');
     setExecTime(null);
     setIsDemoMode(false);
@@ -241,6 +255,7 @@ export default function Playground() {
 
     setExecStatus('running');
     setErrorMessage('');
+    setAuthError(false);
     setOutput('');
     setIsDemoMode(false);
     setDemoNotice('');
@@ -272,9 +287,16 @@ export default function Playground() {
       loadHistory();
     } catch (err) {
       setExecStatus('error');
-      const errText = err.response?.data?.message || err.message || 'Execution request failed.';
-      setErrorMessage(errText);
-      setActiveConsoleTab('errors');
+      if (err.response?.status === 401) {
+        // Dedicated handling for unauthorized/expired token
+        setAuthError(true);
+        setErrorMessage('');
+        setActiveConsoleTab('errors');
+      } else {
+        const errText = err.response?.data?.message || err.message || 'Execution request failed.';
+        setErrorMessage(errText);
+        setActiveConsoleTab('errors');
+      }
     }
   };
 
@@ -462,35 +484,43 @@ export default function Playground() {
         <div className="pg-toolbar-right">
           {/* Execution Status Indicator */}
           <div className="pg-status-indicator">
-            {execStatus === 'idle' && (
-              <span className="pg-status-badge pg-status-idle">
-                <span className="pg-pulse-dot" /> Ready
+            {authError ? (
+              <span className="pg-status-badge pg-status-auth-error">
+                <Lock size={13} /> Unauthorized (401)
               </span>
-            )}
-            {execStatus === 'running' && (
-              <span className="pg-status-badge pg-status-running">
-                <span className="pg-pulse-dot" /> Executing in Sandbox...
-              </span>
-            )}
-            {execStatus === 'success' && (
-              <span className="pg-status-badge pg-status-success">
-                <CheckCircle2 size={13} /> Completed {execTime !== null ? `(${execTime}ms)` : ''}
-              </span>
-            )}
-            {execStatus === 'error' && (
-              <span className="pg-status-badge pg-status-error">
-                <AlertCircle size={13} /> Execution Error
-              </span>
-            )}
-            {execStatus === 'timeout' && (
-              <span className="pg-status-badge pg-status-timeout">
-                <Clock size={13} /> Time Limit Exceeded
-              </span>
-            )}
-            {execStatus === 'demo' && (
-              <span className="pg-status-badge pg-status-demo">
-                <AlertTriangle size={13} /> Demo Execution
-              </span>
+            ) : (
+              <>
+                {execStatus === 'idle' && (
+                  <span className="pg-status-badge pg-status-idle">
+                    <span className="pg-pulse-dot" /> Ready
+                  </span>
+                )}
+                {execStatus === 'running' && (
+                  <span className="pg-status-badge pg-status-running">
+                    <span className="pg-pulse-dot" /> Executing in Sandbox...
+                  </span>
+                )}
+                {execStatus === 'success' && (
+                  <span className="pg-status-badge pg-status-success">
+                    <CheckCircle2 size={13} /> Completed {execTime !== null ? `(${execTime}ms)` : ''}
+                  </span>
+                )}
+                {execStatus === 'error' && (
+                  <span className="pg-status-badge pg-status-error">
+                    <AlertCircle size={13} /> Execution Error
+                  </span>
+                )}
+                {execStatus === 'timeout' && (
+                  <span className="pg-status-badge pg-status-timeout">
+                    <Clock size={13} /> Time Limit Exceeded
+                  </span>
+                )}
+                {execStatus === 'demo' && (
+                  <span className="pg-status-badge pg-status-demo">
+                    <AlertTriangle size={13} /> Demo Execution
+                  </span>
+                )}
+              </>
             )}
           </div>
 
@@ -583,6 +613,52 @@ export default function Playground() {
                 </div>
               ))
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Auth Alert Banner */}
+      {authError && (
+        <div className="pg-auth-banner" role="alert">
+          <div className="pg-auth-banner-icon">
+            <Lock size={20} />
+          </div>
+          <div className="pg-auth-banner-content">
+            <div className="pg-auth-banner-title">
+              Authentication Required for Code Execution
+            </div>
+            <p className="pg-auth-banner-text">
+              Your authorization session is invalid or has expired. The Code Playground executes programs in an isolated, secure sandbox and requires a valid learner or instructor session.
+            </p>
+            <div className="pg-auth-banner-actions">
+              <button
+                type="button"
+                className="pg-btn pg-btn-primary"
+                onClick={() => navigate('/login')}
+              >
+                <LogIn size={13} />
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                className="pg-btn pg-btn-secondary"
+                onClick={async () => {
+                  await switchRole('learner');
+                  setAuthError(false);
+                  loadHistory();
+                }}
+              >
+                <KeyRound size={13} />
+                <span>Quick Login as Learner</span>
+              </button>
+              <button
+                type="button"
+                className="pg-btn pg-btn-secondary"
+                onClick={() => setAuthError(false)}
+              >
+                Dismiss
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -711,7 +787,7 @@ export default function Playground() {
               >
                 <AlertCircle size={14} />
                 <span>Diagnostics & Errors</span>
-                {errorMessage && (
+                {(errorMessage || authError) && (
                   <span className="pg-tab-badge">!</span>
                 )}
               </button>
@@ -755,7 +831,40 @@ export default function Playground() {
             {/* Error Display Panel */}
             {activeConsoleTab === 'errors' && (
               <div>
-                {errorMessage ? (
+                {authError ? (
+                  <div className="pg-auth-error-card">
+                    <div className="pg-auth-error-card-header">
+                      <Lock size={15} color="#f87171" />
+                      <span>Authorization Error (HTTP 401)</span>
+                    </div>
+                    <p className="pg-auth-error-card-body">
+                      Invalid or expired authorization token. This request was blocked by the SkillNest authentication gateway.
+                      Your submitted source code was not executed. Please sign in to establish a valid session.
+                    </p>
+                    <div className="pg-auth-error-card-actions">
+                      <button
+                        type="button"
+                        className="pg-btn pg-btn-primary"
+                        onClick={() => navigate('/login')}
+                        style={{ fontSize: 12, padding: '6px 12px' }}
+                      >
+                        <LogIn size={13} /> Sign In
+                      </button>
+                      <button
+                        type="button"
+                        className="pg-btn pg-btn-secondary"
+                        onClick={async () => {
+                          await switchRole('learner');
+                          setAuthError(false);
+                          loadHistory();
+                        }}
+                        style={{ fontSize: 12, padding: '6px 12px' }}
+                      >
+                        <KeyRound size={13} /> Re-authenticate Session
+                      </button>
+                    </div>
+                  </div>
+                ) : errorMessage ? (
                   <div className="pg-stderr-box">
                     <div className="pg-stderr-header">
                       <AlertCircle size={15} />
@@ -774,6 +883,18 @@ export default function Playground() {
             {/* Program Output Panel */}
             {activeConsoleTab === 'output' && (
               <div>
+                {authError && (
+                  <div className="pg-auth-error-card" style={{ marginBottom: 12 }}>
+                    <div className="pg-auth-error-card-header">
+                      <Lock size={14} color="#f87171" />
+                      <span>Authorization Required (401)</span>
+                    </div>
+                    <p className="pg-auth-error-card-body">
+                      Your session token is invalid or expired. Please sign in to run code in the sandbox.
+                    </p>
+                  </div>
+                )}
+
                 {errorMessage && (
                   <div className="pg-stderr-box">
                     <div className="pg-stderr-header">
@@ -787,7 +908,7 @@ export default function Playground() {
                 {output ? (
                   <pre className="pg-stdout">{output}</pre>
                 ) : (
-                  !errorMessage && (
+                  !errorMessage && !authError && (
                     <div className="pg-stdout empty">
                       {execStatus === 'running'
                         ? 'Executing program in secure sandbox...'
