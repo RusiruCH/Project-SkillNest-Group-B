@@ -118,6 +118,20 @@ const Navbar = () => {
             </Link>
           )}
 
+          {user?.role === 'admin' && (
+            <Link
+              to="/admin/dashboard"
+              className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 ${
+                isActive('/admin/dashboard') || location.pathname.startsWith('/admin')
+                  ? 'bg-rose-50 text-rose-600 font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Shield className="w-4 h-4 text-rose-500" />
+              Admin Portal
+            </Link>
+          )}
+
           {(user?.role === 'instructor' || user?.role === 'admin') && (
             <>
               <Link

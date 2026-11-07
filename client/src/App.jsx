@@ -55,6 +55,13 @@ function App() {
               <Route path="/challenges/my-submissions" element={<LearnerSubmissionsPage />} />
               <Route path="/instructor/challenges" element={<InstructorChallengeDashboard />} />
 
+              {/* Module 2: Admin Approval Management Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/applications" element={<InstructorApplications />} />
+              <Route path="/admin/courses" element={<CourseApprovals />} />
+              <Route path="/admin/history" element={<ApprovalHistoryPage />} />
+              <Route path="/apply-instructor" element={<ApplyInstructorPage />} />
+
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
