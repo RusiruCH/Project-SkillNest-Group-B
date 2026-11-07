@@ -35,6 +35,7 @@ const CurriculumBuilder = () => {
 
   // Modal / Form state for Adding Material
   const [activeTopicForMaterial, setActiveTopicForMaterial] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [materialForm, setMaterialForm] = useState({
     title: '',
     materialType: 'notes',
@@ -96,7 +97,21 @@ const CurriculumBuilder = () => {
     if (!materialForm.title.trim()) return;
 
     try {
-      await materialService.createMaterial(activeTopicForMaterial._id, materialForm);
+      let payload;
+      if (selectedFile) {
+        payload = new FormData();
+        payload.append('title', materialForm.title);
+        payload.append('materialType', materialForm.materialType);
+        payload.append('content', materialForm.content || '');
+        payload.append('codeLanguage', materialForm.codeLanguage || 'javascript');
+        payload.append('durationMinutes', materialForm.durationMinutes || 15);
+        payload.append('resourceLocation', materialForm.resourceLocation || '');
+        payload.append('file', selectedFile);
+      } else {
+        payload = materialForm;
+      }
+
+      await materialService.createMaterial(activeTopicForMaterial._id, payload);
       showFeedback('success', `Material "${materialForm.title}" attached to topic.`);
       setMaterialForm({
         title: '',
@@ -106,6 +121,7 @@ const CurriculumBuilder = () => {
         codeLanguage: 'javascript',
         durationMinutes: 15,
       });
+      setSelectedFile(null);
       setActiveTopicForMaterial(null);
       loadCourse();
     } catch (err) {
@@ -540,19 +556,72 @@ const CurriculumBuilder = () => {
               </div>
 
               {materialForm.materialType === 'video' && (
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Video Stream / YouTube URL
-                  </label>
-                  <input
-                    type="text"
-                    value={materialForm.resourceLocation}
-                    onChange={(e) =>
-                      setMaterialForm({ ...materialForm, resourceLocation: e.target.value })
-                    }
-                    placeholder="https://www.youtube.com/watch?v=..."
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm"
-                  />
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                      Video Stream or YouTube URL
+                    </label>
+                    <input
+                      type="text"
+                      value={materialForm.resourceLocation}
+                      onChange={(e) =>
+                        setMaterialForm({ ...materialForm, resourceLocation: e.target.value })
+                      }
+                      placeholder="https://www.youtube.com/watch?v=... or https://..."
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                      Or Upload MP4 / WebM Video File (Max 50MB)
+                    </label>
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm"
+                      onChange={(e) => setSelectedFile(e.target.files[0] || null)}
+                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl p-1"
+                    />
+                    {selectedFile && (
+                      <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                        Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {materialForm.materialType === 'document' && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                      Upload Document File (PDF, DOCX, PPT, TXT)
+                    </label>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                      onChange={(e) => setSelectedFile(e.target.files[0] || null)}
+                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-slate-200 rounded-xl p-1"
+                    />
+                    {selectedFile && (
+                      <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                        Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                      Or External Document / Reference URL
+                    </label>
+                    <input
+                      type="text"
+                      value={materialForm.resourceLocation}
+                      onChange={(e) =>
+                        setMaterialForm({ ...materialForm, resourceLocation: e.target.value })
+                      }
+                      placeholder="https://docs.example.com/guide.pdf"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
                 </div>
               )}
 
@@ -617,7 +686,10 @@ const CurriculumBuilder = () => {
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => setActiveTopicForMaterial(null)}
+                  onClick={() => {
+                    setActiveTopicForMaterial(null);
+                    setSelectedFile(null);
+                  }}
                   className="px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-100 rounded-xl"
                 >
                   Cancel

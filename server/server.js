@@ -91,6 +91,10 @@ app.use('/api/topics', topicRoutes);
 app.use('/api/topics/:topicId/materials', materialRoutes);
 app.use('/api/materials', materialRoutes);
 
+// Mount routes — Module 2 (Instructor & Course Approval Management)
+app.use('/api/admin', adminApprovalRoutes);
+app.use('/api/instructor-applications', instructorApplicationRoutes);
+
 // Module 04: Hackathon Challenge Management Routes (Member 04)
 const challengeRoutes = require('./routes/challengeRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
@@ -131,13 +135,15 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log('================================================================');
-  console.log(` SkillNest API Server`);
-  console.log(` Module 1: Course & Learning Material Management — L.M.R.C.Bandara`);
-  console.log(` Module 2: Instructor & Course Approval Management — Member 02`);
-  console.log(` Server running on: http://localhost:${PORT}`);
-  console.log('================================================================');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('================================================================');
+    console.log(` SkillNest API Server`);
+    console.log(` Module 1: Course & Learning Material Management — L.M.R.C.Bandara`);
+    console.log(` Module 2: Instructor & Course Approval Management — Member 02`);
+    console.log(` Server running on: http://localhost:${PORT}`);
+    console.log('================================================================');
+  });
+}
 
 module.exports = app;
