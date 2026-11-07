@@ -8,18 +8,19 @@ const {
   deleteExecutionRecord,
   clearExecutionHistory,
 } = require('../controllers/playgroundController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, optionalProtect } = require('../middleware/authMiddleware');
 
 /**
  * Module 3: Code Playground Routes
  * Contributor: Member 3 (B.S.D.P. Wickramasingha - SEU/IS/22/ICT/013)
- * All playground endpoints are protected for authenticated users.
+ * Code execution and history require authenticated users (Learner, Instructor, Admin).
+ * Config is accessible with optionalProtect so editor environments can load starter templates cleanly.
  */
 
 // Configuration and language metadata
-router.get('/config', protect, getPlaygroundConfig);
+router.get('/config', optionalProtect, getPlaygroundConfig);
 
-// Code execution
+// Code execution (strictly protected)
 router.post('/execute', protect, executeSourceCode);
 
 // Execution history management

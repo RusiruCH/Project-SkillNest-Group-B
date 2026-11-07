@@ -10,16 +10,29 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Attach JWT token from localStorage to every outgoing request
+// Attach valid JWT token from localStorage to every outgoing request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('skillnest_token');
-    if (token) {
+    // Ensure we do not send dummy or placeholder strings to real endpoints
+    if (token && !token.startsWith('demo_')) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Global response interceptor: purge expired/invalid tokens upon 401 Unauthorized
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Remove stale/invalid token so future requests do not repeatedly fail
+      localStorage.removeItem('skillnest_token');
+    }
+    return Promise.reject(error);
+  }
 );
 
 // Fallback Mock Dataset for offline / preview convenience
